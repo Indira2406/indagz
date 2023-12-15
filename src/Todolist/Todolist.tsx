@@ -1,18 +1,14 @@
-import React, { ChangeEvent, useCallback } from "react";
-import { FilterValuesType } from "./App";
-import { AddItemForm } from "./AddItemForm";
-import { EditableSpan } from "./EditableSpan";
+import React, {  useCallback } from "react";
+import { FilterValuesType } from "../App";
+import { AddItemForm } from "../AddItemForm/AddItemForm";
+import { EditableSpan } from "../EditableSpan";
 import IconButton from "@mui/material/IconButton/IconButton";
 import { Delete } from "@mui/icons-material";
-import { Button, Checkbox } from "@mui/material";
+import { Button } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  addTaskAC,
-  changeTaskStatusAC,
-  changeTaskTitleAC,
-  removeTaskAC,
-} from "./state/tasks-reducer";
-import { AppRootState } from "./state/store";
+import { addTaskAC } from "../state/tasks-reducer";
+import { AppRootState } from "../state/store";
+import { Task } from "../Tasks/Task";
 
 export type TaskType = {
   id: string;
@@ -86,7 +82,7 @@ export const Todolist = React.memo((props: PropsType) => {
       />
       <div>
         {tasksForTodolist?.map((t) => (
-          <Task id={props.id} t={t} />
+          <Task id={props.id} task={t} />
         ))}
       </div>
       <div>
@@ -115,33 +111,3 @@ export const Todolist = React.memo((props: PropsType) => {
     </div>
   );
 });
-
-type TasksPropType = {
-  t: TaskType;
-  id: string;
-};
-
-const Task = (props: TasksPropType) => {
-  const { t, id } = props;
-  const dispatch = useDispatch();
-
-  const onClickHandler = useCallback(() => dispatch(removeTaskAC(t.id, id)), [dispatch, id, t.id]);
-  const onChangeHandler = useCallback((e: ChangeEvent<HTMLInputElement>) => {
-    let newIsDoneValue = e.currentTarget.checked;
-    dispatch(changeTaskStatusAC(t.id, newIsDoneValue, id));
-  }, [ dispatch, t.id, id ]);
-  const onTitleChangeHandler = useCallback((newValue: string) => {
-    dispatch(changeTaskTitleAC(t.id, newValue, id));
-  }, [dispatch, t.id, id]);
-
-  return (
-    <div key={t.id} className={t.isDone ? "is-done" : ""}>
-      <Checkbox checked={t.isDone} color="primary" onChange={onChangeHandler} />
-
-      <EditableSpan value={t.title} onChange={onTitleChangeHandler} />
-      <IconButton onClick={onClickHandler}>
-        <Delete />
-      </IconButton>
-    </div>
-  );
-};
